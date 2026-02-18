@@ -1,0 +1,10 @@
+services:
+  sftp:
+    image: atmoz/sftp
+    container_name: sftp_server
+    ports:
+      - "2222:22"
+    volumes:
+      - ./data:/home
+    command: >
+      sftp:Pass123:1001::data
