@@ -33,17 +33,32 @@ Match Group sftp_users
     X11Forwarding no
     PasswordAuthentication yes
 
+Match User odmin
+    AllowTcpForwarding yes
+
+
 sudo sshd -t
 sudo systemctl restart ssh
 
-# user
-USER=duser
-sudo useradd -m -d /sftproot/$USER -g sftp_users -s /usr/sbin/nologin -k /tmp/empty $USER
-sudo passwd $USER
+________________________________________
 
-# sudo mkdir /sftproot/$USER
-# sudo chown $USER:sftp_users /sftproot/$USER
-# sudo chmod 700 /sftproot/$USER
+# USER=duser
+## sudo useradd -m -d /sftproot/$USER -g sftp_users -s /usr/sbin/nologin -k /tmp/empty $USER
+# sudo useradd -m -d /sftproot/$USER -g sftp_users -k /tmp/empty $USER
+# sudo passwd $USER
+
+## sudo mkdir /sftproot/$USER
+## sudo chown $USER:sftp_users /sftproot/$USER
+## sudo chmod 700 /sftproot/$USER
+________________________________________
+
+# sudo nano /etc/default/useradd
+HOME=/sftproot
+SKEL=/tmp/empty
+GROUP=1001
+
+# sudo nano /etc/login.defs
+USERGROUPS_ENAB no
 ________________________________________
 
 sudo apt install fail2ban -y
@@ -98,7 +113,7 @@ table inet filter {
         type filter hook output priority 0; policy accept;
     }
 }
-
+________________________________________
 
 # sudo nano /etc/sysctl.d/99-disable-ipv6.conf
 
@@ -107,3 +122,20 @@ net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
 
 sudo sysctl -p /etc/sysctl.d/99-disable-ipv6.conf
+
+________________________________________
+sudo apt install cockpit -y
+
+ssh -L 9999:localhost:9090 odmin@192.168.88.117
+
+# sudo nano /etc/cockpit/cockpit.conf
+[WebService]
+ListenAddress = 127.0.0.1
+Port = 9090
+
+________________________________________
+sudo apt install libpam-pwquality -y
+
+# sudo nano /etc/security/pwquality.conf
+minlen = 13
+enforce_for_root
