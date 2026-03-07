@@ -1,3 +1,6 @@
+# https://github.com/winfsp/winfsp
+# https://github.com/winfsp/sshfs-win
+
 $DriveLetter = "Z"
 $RemotePath = "\\sshfs\sftp@11.22.33.44!2222"
 
