@@ -16,6 +16,8 @@ sudo apt update
 sudo apt install openssh-server -y
 
 sudo groupadd sftp_users
+
+sudo mkdir /sftproot
 sudo chown root:root /sftproot
 sudo chmod 755 /sftproot
 
@@ -33,7 +35,9 @@ Match Group sftp_users
     X11Forwarding no
     PasswordAuthentication yes
 
-Match User odmin
+
+# Match User odmin
+Match User root
     AllowTcpForwarding yes
 
 
@@ -55,7 +59,8 @@ ________________________________________
 # sudo nano /etc/default/useradd
 HOME=/sftproot
 SKEL=/tmp/empty
-GROUP=1001
+#GROUP=1001
+GROUP=1000
 
 # sudo nano /etc/login.defs
 USERGROUPS_ENAB no
@@ -126,12 +131,23 @@ sudo sysctl -p /etc/sysctl.d/99-disable-ipv6.conf
 ________________________________________
 sudo apt install cockpit -y
 
-ssh -L 9999:localhost:9090 odmin@192.168.88.117
+#  ssh -L 9999:localhost:9090 odmin@192.168.88.117
 
-# sudo nano /etc/cockpit/cockpit.conf
-[WebService]
-ListenAddress = 127.0.0.1
-Port = 9090
+# # sudo nano /etc/cockpit/cockpit.conf
+# [WebService]
+# ListenAddress = 127.0.0.1
+# Port = 9090
+
+systemctl edit cockpit.socket 
+
+[Socket]
+ListenStream=
+ListenStream=127.0.0.1:9999
+FreeBind=yes
+
+
+nano  /etc/cockpit/disallowed-users
+# root
 
 ________________________________________
 sudo apt install libpam-pwquality -y
@@ -139,3 +155,12 @@ sudo apt install libpam-pwquality -y
 # sudo nano /etc/security/pwquality.conf
 minlen = 13
 enforce_for_root
+________________________________________
+
+
+ssh -L 9999:localhost:9999 root@134776.ip-ns.net
+http://127.0.0.1:9999
+
+sftp://user@134776.ip-ns.net
+
+
